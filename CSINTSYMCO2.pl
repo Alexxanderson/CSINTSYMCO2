@@ -12,6 +12,14 @@ disease(malaria) :- symptom(fever), symptom(headache), symptom(nausea).
 disease(cold) :- symptom(cough), symptom(headache), symptom(sore_throat).
 disease(measles) :- symptom(fever), symptom(cough), symptom(rash), not(symptom(headache)).
 
+
+
+
+
+
+
+% DONT MIND THIS PART, PART NI ANDRE
+
 % Diagnosis
 diagnose(Disease) :-
     disease(Disease), !.
