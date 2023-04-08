@@ -6,130 +6,21 @@ add_symptom(Symptom) :-
     retract(symptom_list(List)),
     asserta(symptom_list([Symptom|List])).
 
-% Symptoms
-symptom(fever).
-symptom(cough).
-symptom(headache).
-symptom(sore_throat).
-symptom(nausea).
-symptom(vomiting).
-symptom(rash).
-symptom(toothache).    
-
-% Symptoms of Tooth Decay
-symptom(discomfort).
-symptom(pain_while_chewing).
-symptom(tooth_has_holes).
-symptom(discolored_tooth).
-symptom(sensitive_eating).
-% hpi(hot, sensitive_eating). 
-% hpi(cold, sensitive_eating).
-
-% Symptoms of Influenza
-symptom(stuffy_nose).
-symptom(chills).
-% symptom(fever).
-% symptom(cough).
-symptom(muscle_aches).
-% HPI
-% hpi(dry, cough).
-
-% Symptoms of Typhoid Fever
-% symptom(fever)
-% symptom(headache)
-symptom(abdominal_pain).
-% symptom(diarrhea)
-symptom(constipation).
-% symptom(loss_of_appetite)
-% symptom(vomiting)
-symptom(body_aches).
-% symptom(rash)
-% rash(trunk).
-% fever(high).
-
-% Symptoms of Asthma
-symptom(shortness_of_breath).
-symptom(chest_tightness).
-symptom(chest_pain).
-symptom(wheezing).
-% symptom(cough).
-symptom(difficulty_breathing).
-
-% Symptoms of Cholera
-symptom(dehydration).
-% symptom(nausea)
-% symptom(vomiting)
-symptom(abdominal_cramps).
-symptom(diarrhea).
-% diarrhea(watery).
-% diarrhea(rice_water).
-
-% Symptoms of Diabetes
-symptom(frequent_urination).
-symptom(excessive_thrist).
-symptom(excessive_hunger).
-symptom(weight_loss).
-% weight_loss(unexplained).
-symptom(fatigue).
-symptom(blurred_vision).
-symptom(slow_healing).
-
-% Symptoms of Pneumonia
-% symptom(cough)
-% symptom(fever)
-symptom(sweating).
-symptom(shaking_chills).
-% symptom(shortness_of_breath)
-% symptom(chest_pain)
-symptom(confusion).
-% symptom(nausea)
-% symptom(vomiting)
-% symptom(diarrhea)
-% symptom(muscle_aches)
-% symptom(fatigue)
-% symptom(difficulty_breathing)
-symptom(loss_of_appetite).
-symptom(rapid_breathing).
-
-
-% Symptoms of Chickenpox
-% symptom(fever). 
-% symptom(headache).
-symptom(papules).
-symptom(vesicles).
-symptom(scabs).
-% symptom(loss_of_appetite).
-symptom(fatigue).
-
-% symptoms of Migraine
-% symptom(headache).
-% symptom(nausea).
-% symptom(vomiting).
-% symptom(blurred_vision).
-symptom(dizziness).
-symptom(numbness_on_face).
-symptom(tingling_on_face).
-symptom(difficulty_speaking).
-symptom(fatigue).
-symptom(mood_change).
-% HPI
-% hpi(headache,throbbing_on_one_side).
-
 % diseases mainly with fever
-disease(measles, [fever, cough, rash]).
-disease(influenza, [fever, cough, stuffy_nose, chills, muscle_aches]).
+disease(measles, [high_fever, cough, rash, white_spots_in_mouth]).
+disease(influenza, [fever, dry_cough, runny_nose, chills, muscle_aches, vomiting]).
+disease(pneumonia, [fever, cough, nausea, vomiting, shortness_of_breath, chest_pain, sweating, shaking_chills, loss_of_appetite, muscle_aches, fatigue]).
 disease(chickenpox, [fever, headache, rash, papules, vesicles, scabs, loss_of_appetite, fatigue]).
+disease(thypoid, [high_fever, headache, abdominal_pain, diarrhea, muscle_aches, fatigue, rash]).
+% diseases involving difficulty in breathing
+disease(asthma, [shortness_of_breath, cough, chest_tightness, chest_pain, wheezing]).
 % diseases with fatigue
-disease(migraine, [fatigue, blurred_vision, headache, nausea, vomiting, dizziness, tingling_on_face, numbness_on_face, difficulty_speaking, mood_change]).
-disease(diabetes, [fatigue, blurred_vision, frequent_urination, excessive_thrist, excessive_hunger, weight_loss, slow_healing]).
+disease(migraine, [fatigue, blurred_vision, throbbing_headache, nausea, vomiting, dizziness, tingling_on_face, numbness_on_face, mood_change]).
+disease(diabetes, [fatigue, blurred_vision, frequent_urination, excessive_thirst, excessive_hunger, weight_loss, slow_healing]).
 % diseases with abdominal pain
-disease(thypoid, [abdominal_pain, constipation, body_aches]).
-disease(cholera, [abdominal_pain, dehydration, diarrhea]).
+disease(cholera, [nausea, vomiting, abdominal_pain, dehydration, sudden_diarrhea]).
 % mouth disease
 disease(tooth_decay, [toothache, discomfort, pain_while_chewing, tooth_has_holes, discolored_tooth]).
-% diseases involving difficulty in breathing
-disease(asthma, [shortness_of_breath, chest_tightness, chest_pain, wheezing]).
-disease(pneumonia, [rapid_breathing, sweating, shaking_chills, confusion, appetite_loss]).
 
 % Define the main function to start the chatbot
 chat :-
@@ -140,12 +31,13 @@ chat :-
     % add_symptom(cough), add_symptom(fever), symptom_list(PatientSymptoms),  write(PatientSymptoms), nl,
     write('Type in the number that applies: '), read(ChiefC), nl,
     (
+        % THIS COMPLAINT IS STILL INCOMPLETE
         ChiefC = 1 ->
-            write('Chief Complaint: Fever'), nl,
+        (   write('Chief Complaint: Fever'), nl,
             add_symptom(fever),
             write('Are you experiencing coughing (y/n)? '), read(Coughing), nl,
             (
-                Coughing = 'y' -> (add_symptom(cough), write('Test'));
+                Coughing = 'y' -> add_symptom(cough);
                 Coughing = 'n' -> write('No Coughing.');
                 write('Invalid input. Please try again.')
             ),
@@ -192,11 +84,48 @@ chat :-
                 Appetite = 'n' -> write('No Appetite');
                 write('Invalid input. Please try again.')
             )
+            
 
             % write('Are you experiencing  (Y/N)? '), read(Response), nl,
             % (
             %     Response = 'Y' -> add_symptom()
             % )
+        );
+        ChiefC = 5 -> 
+        (
+            write('Chief Complaint: Difficulty Breathing'), nl,
+            % add_symptom(shortness_of_breath),
+            write('Are you feeling short of breath (y/n)? '), read(Breathing), nl,
+            (
+                Breathing = 'y' -> add_symptom(shortness_of_breath);
+                Breathing = 'n' -> write('No Shortness of Breath.');
+                write('Invalid input. Please try again.')
+            ),
+            write('Are you experiencing coughing (y/n)? '), read(Coughing), nl,
+            (
+                Coughing = 'y' -> add_symptom(cough);
+                Coughing = 'n' -> write('No Coughing.');
+                write('Invalid input. Please try again.')
+            ),
+            write('Are you feeling any tightness or pressure in your chest (y/n)? '), read(ChestTightness), nl,
+            (
+                ChestTightness = 'y' -> add_symptom(chest_tightness);
+                ChestTightness = 'n' -> write('No Tightness in Chest.');
+                write('Invalid input. Please try again.')
+            ),
+            write('Do you feel any discomfort or pain in your chest (y/n)?'), read(ChestPain), nl,
+            (
+                ChestPain = 'y' -> add_symptom(chest_pain);
+                ChestPain = 'n' -> write('No Chest Pain.');
+                write('Invalid input. Please try again.')
+            ),
+            write('Are you experiencing any high-pitched whistling sounds when you breathe, especially when exhaling (y/n)? '), read(Wheezing), nl,
+            (
+                Wheezing = 'y' -> add_symptom(wheezing);
+                Wheezing = 'n' -> write('No Wheezing');
+                write('Invalid input. Please try again.')
+            )
+        )
             
 
     ), nl,
@@ -205,12 +134,7 @@ chat :-
     diagnose_all(PatientSymptoms, Diseases), format('Diseases = ~w', [Diseases]), nl,
     forall(member(String, Diseases), process_diseases(String)).
 
-    
-% has_symptoms([], _).
-% has_symptoms([Symptom|Rest], SymptomList) :-
-%     member(Symptom, SymptomList),
-%     has_symptoms(Rest, SymptomList).
-
+% Check if disease applies to symptoms
 diagnose(Disease, SymptomList) :-
     disease(Disease, Symptoms),
     subset(SymptomList, Symptoms).
@@ -302,3 +226,113 @@ read_strings(Strings) :-
 %                     symptom(confusion),
 %                     symptom(appetite_loss),
 %                     symptom(rapid_breathing).
+
+
+% % Symptoms
+% symptom(fever).
+% symptom(cough).
+% symptom(headache).
+% symptom(sore_throat).
+% symptom(nausea).
+% symptom(vomiting).
+% symptom(rash).
+% symptom(toothache).    
+
+% % Symptoms of Tooth Decay
+% symptom(discomfort).
+% symptom(pain_while_chewing).
+% symptom(tooth_has_holes).
+% symptom(discolored_tooth).
+% symptom(sensitive_eating).
+% % hpi(hot, sensitive_eating). 
+% % hpi(cold, sensitive_eating).
+
+% % Symptoms of Influenza
+% symptom(stuffy_nose).
+% symptom(chills).
+% % symptom(fever).
+% % symptom(cough).
+% symptom(muscle_aches).
+% % HPI
+% % hpi(dry, cough).
+
+% % Symptoms of Typhoid Fever
+% % symptom(fever)
+% % symptom(headache)
+% symptom(abdominal_pain).
+% % symptom(diarrhea)
+% symptom(constipation).
+% % symptom(loss_of_appetite)
+% % symptom(vomiting)
+% symptom(body_aches).
+% % symptom(rash)
+% % rash(trunk).
+% % fever(high).
+
+% % Symptoms of Asthma
+% symptom(shortness_of_breath).
+% symptom(chest_tightness).
+% symptom(chest_pain).
+% symptom(wheezing).
+% % symptom(cough).
+% symptom(difficulty_breathing).
+
+% % Symptoms of Cholera
+% symptom(dehydration).
+% % symptom(nausea)
+% % symptom(vomiting)
+% symptom(abdominal_cramps).
+% symptom(diarrhea).
+% % diarrhea(watery).
+% % diarrhea(rice_water).
+
+% % Symptoms of Diabetes
+% symptom(frequent_urination).
+% symptom(excessive_thirst).
+% symptom(excessive_hunger).
+% symptom(weight_loss).
+% % weight_loss(unexplained).
+% symptom(fatigue).
+% symptom(blurred_vision).
+% symptom(slow_healing).
+
+% % Symptoms of Pneumonia
+% % symptom(cough)
+% % symptom(fever)
+% symptom(sweating).
+% symptom(shaking_chills).
+% % symptom(shortness_of_breath)
+% % symptom(chest_pain)
+% symptom(confusion).
+% % symptom(nausea)
+% % symptom(vomiting)
+% % symptom(diarrhea)
+% % symptom(muscle_aches)
+% % symptom(fatigue)
+% % symptom(difficulty_breathing)
+% symptom(loss_of_appetite).
+% symptom(rapid_breathing).
+
+
+% % Symptoms of Chickenpox
+% % symptom(fever). 
+% % symptom(headache).
+% symptom(papules).
+% symptom(vesicles).
+% symptom(scabs).
+% % symptom(loss_of_appetite).
+% symptom(fatigue).
+
+% % symptoms of Migraine
+% % symptom(headache).
+% % symptom(nausea).
+% % symptom(vomiting).
+% % symptom(blurred_vision).
+% symptom(dizziness).
+% symptom(numbness_on_face).
+% symptom(tingling_on_face).
+% symptom(difficulty_speaking).
+% symptom(fatigue).
+% symptom(mood_change).
+% % HPI
+% % hpi(headache,throbbing_on_one_side).
