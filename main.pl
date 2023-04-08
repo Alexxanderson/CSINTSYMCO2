@@ -7,81 +7,76 @@ add_symptom(Symptom) :-
     asserta(symptom_list([Symptom|List])).
 
 % diseases mainly with fever
-disease(measles, [high_fever, cough, rash, white_spots_in_mouth]).
-disease(influenza, [fever, dry_cough, runny_nose, chills, muscle_aches, vomiting]).
-disease(pneumonia, [fever, cough, nausea, vomiting, shortness_of_breath, chest_pain, sweating, shaking_chills, loss_of_appetite, muscle_aches, fatigue]).
-disease(chickenpox, [fever, headache, rash, papules, vesicles, scabs, loss_of_appetite, fatigue]).
-disease(thypoid, [high_fever, headache, abdominal_pain, diarrhea, muscle_aches, fatigue, rash]).
+disease(measles, [fever, rash, high_fever, cough, white_spots_in_mouth]).
+disease(thypoid, [fever, rash, high_fever, headache, abdominal_pain, diarrhea, muscle_aches, fatigue]).
+disease(influenza, [fever, rash, cough, dry_cough, chills, vomiting, muscle_aches, runny_nose]).
+disease(pneumonia, [fever, rash, cough, chills, vomiting, muscle_aches, shortness_of_breath, difficulty_breathing, chest_pain, loss_of_appetite, fatigue, nausea]).
+disease(chickenpox, [fever, rash, papules, vesicles, scabs, headache, loss_of_appetite, fatigue]).
+
 % diseases involving difficulty in breathing
-disease(asthma, [shortness_of_breath, cough, chest_tightness, chest_pain, wheezing]).
+disease(asthma, [difficulty_breathing, shortness_of_breath, cough, chest_tightness, chest_pain, wheezing]).
 % diseases with fatigue
-disease(migraine, [fatigue, blurred_vision, throbbing_headache, nausea, vomiting, dizziness, tingling_on_face, numbness_on_face, mood_change]).
+disease(migraine, [fatigue, blurred_vision, headache, throbbing_headache, nausea, vomiting, dizziness, tingling_on_face, numbness_on_face, mood_change]).
 disease(diabetes, [fatigue, blurred_vision, frequent_urination, excessive_thirst, excessive_hunger, weight_loss, slow_healing]).
 % diseases with abdominal pain
-disease(cholera, [nausea, vomiting, abdominal_pain, dehydration, sudden_diarrhea]).
+disease(cholera, [nausea, vomiting, abdominal_pain, dehydration, diarrhea]).
 % mouth disease
-disease(tooth_decay, [toothache, discomfort, pain_while_chewing, tooth_has_holes, discolored_tooth]).
+disease(tooth_decay, [toothache, discomfort, pain_while_chewing, tooth_has_holes, discolored_tooth, sensitive_teeth]).
+
 
 % Define the main function to start the chatbot
 chat :-
     write('Welcome to the Medical Chatbot. '), nl,
     write('Please enter your name: '), read(Patient),
-    write('Hello, '), write(Patient), write('. What are your chief complaint/s? '), nl,
-    write('(1) Fever\n(2) Fatigue\n(3) Abdominal Pain\n(4) Toothache\n(5) Difficulty Breathing'), nl,
+    write('Hello, '), write(Patient), write('. What is your chief complaint? '), nl,
+    write('(1) Fever\n(2) Fatigue\n(3) Abdominal Pain\n(4) Toothache\n(5) Difficulty Breathing\n(6) Other'), nl,
     % add_symptom(cough), add_symptom(fever), symptom_list(PatientSymptoms),  write(PatientSymptoms), nl,
     write('Type in the number that applies: '), read(ChiefC), nl,
     (
-        % THIS COMPLAINT IS STILL INCOMPLETE
+        % Complaint Finished (Up for revision)
         ChiefC = 1 ->
         (   write('Chief Complaint: Fever'), nl,
             add_symptom(fever),
-            write('Are you experiencing coughing (y/n)? '), read(Coughing), nl,
+            ask_highfever,
+            ask_rashes,
+            ask_cough,
+            ask_runnynose,
+            ask_headache,
+            ask_shortofbreath,
+            ask_appetite,
+            ask_fatigue,
+            ask_nausea,
+            ask_vomiting,
+            ask_chills,
+            ask_muscleache,
+            ask_diarrhea,
+            ask_abdopain,
+            ask_chestpain
+        );
+        ChiefC = 2 ->
+        (   
+            write('Chief Complaint: Fatigue'), nl,
+            add_symptom(fatigue),
+            ask_headache,
+            write('Are you suffering from blurred vision (y/n)? '), read(Bvision), nl,
             (
-                Coughing = 'y' -> add_symptom(cough);
-                Coughing = 'n' -> write('No Coughing.');
-                write('Invalid input. Please try again.')
-            ),
-            write('Are you experiencing headaches (y/n)? '), read(Headache), nl,
-            (
-                Headache = 'y' -> add_symptom(headache);
-                Headache = 'n' -> write('No headaches.');
-                write('Invalid input. Please try again.')
-            ),
-            write('Are you experiencing rashes (y/n)? '), read(Rashes), nl,
-            (
-                Rashes = 'y' -> (add_symptom(rash), write('Are you experiencing tiny fluid-filled blisters (y/n)? '), read(Vesicles), nl,
+                Bvision = 'y' -> (add_symptom(blurred_vision), write('Are you experiencing difficulty in speaking (y/n)? '), read(Diffspeak), nl,
                     (
-                        Vesicles = 'y' -> (add_symptom(vesicles), write('Are you experiencing acne-like bumps on your skin (y/n)? '), read(Papules), nl,
-                            (
-                                Papules = 'y' -> (add_symptom(papules), write('Are you experiencing scabs (y/n)? '), read(Scabs), nl,
-                                    (
-                                        Scabs = 'y' -> add_symptom(scabs);
-                                        Scabs = 'n' -> write('No Scabs.');
-                                        write('Invalid input. Please try again.')
-                                    )
-                                ); 
-                                Papules = 'n' -> write('No Papules.');
-                                write('Invalid input. Please try again.')
-                            )
+                    Diffspeak = 'y' -> (add_symptom(difficulty_speaking), write('Migraine for sure')
                             
                         );
-                        Vesicles = 'n' -> write('No Vesicles.');
+                        Diffspeak = 'n' -> write('No difficulty in speaking.'), nl;
                         write('Invalid input. Please try again.')
                     )
                 );
-                Rashes = 'n' -> write('No Rashes.');
+                Bvision = 'n' -> write('Clear vision.'), nl;
                 write('Invalid input. Please try again.')
             ),
-            write('Are you experiencing fatigue (y/n)? '), read(Fatigue), nl,
+            ask_fever,
+            write('Are you experiencing constipation (y/n)? '), read(Constipation), nl,
             (
-                Fatigue = 'y' -> add_symptom(fatigue);
-                Fatigue = 'n' -> write('No Fatigue');
-                write('Invalid input. Please try again.')
-            ),
-            write('Are you losing your appetite (y/n)? '), read(Appetite), nl,
-            (
-                Appetite = 'y' -> add_symptom(loss_of_appetite);
-                Appetite = 'n' -> write('No Appetite');
+                Constipation = 'y' -> add_symptom(loss_of_appetite);
+                Constipation = 'n' -> write('No Constipation'), nl;
                 write('Invalid input. Please try again.')
             )
             
@@ -91,48 +86,265 @@ chat :-
             %     Response = 'Y' -> add_symptom()
             % )
         );
+        ChiefC = 3 -> 
+        (
+            write('Chief Complaint: Abdominal Pain'), nl,
+            add_symptom(abdominal_pain),
+            ask_fever,
+            ask_rashes,
+            ask_nausea,
+            ask_vomiting,
+            ask_dehydration,
+            ask_diarrhea,
+            ask_headache,
+            ask_muscleache,
+            ask_fatigue
+            
+        );
+        ChiefC = 4 ->
+        (
+            write('Chief Complaint: Toothache'), nl,
+            add_symptom(tooth_ache),
+            ask_discomfort,
+            ask_painchewing,
+            ask_toothholes,
+            ask_discoloredteeth,
+            ask_sensitiveteeth
+        );
         ChiefC = 5 -> 
         (
             write('Chief Complaint: Difficulty Breathing'), nl,
-            % add_symptom(shortness_of_breath),
-            write('Are you feeling short of breath (y/n)? '), read(Breathing), nl,
-            (
-                Breathing = 'y' -> add_symptom(shortness_of_breath);
-                Breathing = 'n' -> write('No Shortness of Breath.');
-                write('Invalid input. Please try again.')
-            ),
-            write('Are you experiencing coughing (y/n)? '), read(Coughing), nl,
-            (
-                Coughing = 'y' -> add_symptom(cough);
-                Coughing = 'n' -> write('No Coughing.');
-                write('Invalid input. Please try again.')
-            ),
-            write('Are you feeling any tightness or pressure in your chest (y/n)? '), read(ChestTightness), nl,
-            (
-                ChestTightness = 'y' -> add_symptom(chest_tightness);
-                ChestTightness = 'n' -> write('No Tightness in Chest.');
-                write('Invalid input. Please try again.')
-            ),
-            write('Do you feel any discomfort or pain in your chest (y/n)?'), read(ChestPain), nl,
-            (
-                ChestPain = 'y' -> add_symptom(chest_pain);
-                ChestPain = 'n' -> write('No Chest Pain.');
-                write('Invalid input. Please try again.')
-            ),
-            write('Are you experiencing any high-pitched whistling sounds when you breathe, especially when exhaling (y/n)? '), read(Wheezing), nl,
-            (
-                Wheezing = 'y' -> add_symptom(wheezing);
-                Wheezing = 'n' -> write('No Wheezing');
-                write('Invalid input. Please try again.')
-            )
+            add_symptom(difficulty_breathing),
+            ask_shortofbreath,
+            ask_cough,
+            ask_chestpain,
+            ask_chesttightness,
+            ask_wheezing,
+            ask_fever,
+            ask_rashes,
+            ask_chills,
+            ask_vomiting,
+            ask_nausea,
+            ask_muscleache,
+            ask_appetite
         )
-            
-
     ), nl,
     % read_strings(Strings), nl, format('Symptoms = ~w', [Strings]), nl,
     symptom_list(PatientSymptoms), format('Symptoms = ~w', [PatientSymptoms]), nl,
     diagnose_all(PatientSymptoms, Diseases), format('Diseases = ~w', [Diseases]), nl,
     forall(member(String, Diseases), process_diseases(String)).
+
+
+% asking symptoms
+ask_fever :-
+    write('Do you have a fever (y/n)? '), read(Fever), nl,
+    (
+        Fever = 'y' -> add_symptom(fever);
+        Fever = 'n' -> write('No Fever.\n');
+        write('Invalid input. Please try again.\n'), ask_fever
+    ).
+ask_highfever :-
+    write('Is your fever over 38 degrees Celsius (y/n)? '), read(Fever), nl,
+    (
+        Fever = 'y' -> add_symptom(high_fever);
+        Fever = 'n' -> write('Normal Fever.\n');
+        write('Invalid input. Please try again.\n'), ask_highfever
+    ).
+
+ask_whitespots :-
+    write('Do you notice white spots in your mouth (y/n)? '), read(WhiteSpots), nl,
+    (
+        WhiteSpots = 'y' -> add_symptom(white_spots_in_mouth);
+        WhiteSpots = 'n' -> (write('No White Spots in Mouth.\n'));
+        write('Invalid input. Please try again.\n'), ask_whitespots
+    ).
+ask_vesicles :-
+    write('Are you experiencing tiny fluid-filled blisters (y/n)? '), read(Vesicles), nl,
+    (
+        Vesicles = 'y' -> add_symptom(vesicles);
+        Vesicles = 'n' -> write('No Vesicles.\n');
+        write('Invalid input. Please try again.\n'), ask_vesicles
+    ).
+ask_papules :-
+    write('Are you experiencing acne-like bumps on your skin (y/n)? '), read(Papules), nl,
+    (
+        Papules = 'y' -> add_symptom(papules); 
+        Papules = 'n' -> write('No Papules.\n');
+        write('Invalid input. Please try again.\n'), ask_papules
+    ).
+ask_scabs :- 
+    write('Are you experiencing scabs (y/n)? '), read(Scabs), nl,
+    (
+        Scabs = 'y' -> add_symptom(scabs);
+        Scabs = 'n' -> write('No Scabs.\n');
+        write('Invalid input. Please try again.\n'), ask_scabs
+    ).
+ask_rashes :-
+    write('Are you experiencing rashes (y/n)? '), read(Rashes), nl,
+    (
+        Rashes = 'y' -> (add_symptom(rash),
+            ask_whitespots,
+            ask_vesicles,
+            ask_papules,
+            ask_scabs
+        );
+        Rashes = 'n' -> write('No Rashes.\n');
+        write('Invalid input. Please try again.\n'), ask_rashes
+    ).
+ask_cough :-
+    write('Are you experiencing coughing (y/n)? '), read(Coughing), nl,
+    (
+        Coughing = 'y' -> (add_symptom(cough), ask_drycough);
+        Coughing = 'n' -> write('No Coughing.\n');
+        write('Invalid input. Please try again.\n'), ask_cough
+    ).
+ask_drycough :-
+    write('Is the cough dry (y/n)?'), read(Drycough), nl,
+    (
+        Drycough = 'y' -> add_symptom(dry_cough);
+        Drycough = 'n' -> write('Normal Cough.\n');
+        write('Invalid input. Please try again.\n'), ask_drycough
+    ).
+ask_runnynose :-
+    write('Do you have a runny nose (y/n)? '), read(RunnyNose), nl,
+    (
+        RunnyNose = 'y' -> add_symptom(runny_nose);
+        RunnyNose = 'n' -> write('No Runny Nose.\n');
+        write('Invalid input. Please try again.\n'), ask_runnynose
+    ).
+ask_headache :-
+    write('Are you experiencing headaches (y/n)? '), read(Headache), nl,
+    (
+        Headache = 'y' -> add_symptom(headache);
+        Headache = 'n' -> write('No Headaches.\n');
+        write('Invalid input. Please try again.\n'), ask_headache
+    ).
+ask_shortofbreath :-
+    write('Are you short of breath often (y/n)? '), read(ShortOfBreath), nl,
+    (
+        ShortOfBreath = 'y' -> add_symptom(shortness_of_breath);
+        ShortOfBreath = 'n' -> write('No Shortness of Breath.\n');
+        write('Invalid input. Please try again.\n'), ask_shortofbreath
+    ).
+ask_appetite :-
+    write('Did you lose your appetite (y/n)? '), read(Appetite), nl,
+    (
+        Appetite = 'y' -> add_symptom(loss_of_appetite);
+        Appetite = 'n' -> write('No Appetite Loss.\n');
+        write('Invalid input. Please try again.\n'), ask_appetite
+    ).
+ask_fatigue :-
+    write('Do you feel fatigued (y/n)? '), read(Fatigue), nl,
+    (
+        Fatigue = 'y' -> add_symptom(fatigue);
+        Fatigue = 'n' -> write('No Fatigue.\n');
+        write('Invalid input. Please try again.\n'), ask_fatigue
+    ).
+ask_nausea :-
+    write('Do you feel nauseous (y/n)? '), read(Nausea), nl,
+    (
+        Nausea = 'y' -> add_symptom(nausea);
+        Nausea = 'n' -> write('No Nausea.\n');
+        write('Invalid input. Please try again.\n'), ask_nausea
+    ).
+ask_vomiting :-
+    write('Are you vomiting (y/n)? '), read(Vomiting), nl,
+    (
+        Vomiting = 'y' -> add_symptom(vomiting);
+        Vomiting = 'n' -> write('No Vomiting.\n');
+        write('Invalid input. Please try again.\n'), ask_vomiting
+    ).
+ask_muscleache :-
+    write('Are you experiencing muscle discomfort (y/n)? '), read(MuscleAches), nl,
+    (
+        MuscleAches = 'y' -> add_symptom(muscle_aches);
+        MuscleAches = 'n' -> write('No Muscle Aches.\n');
+        write('Invalid input. Please try again.\n'), ask_muscleache
+    ).
+ask_diarrhea :-
+    write('Are you experiencing diarrhea (y/n)? '), read(Diarrhea), nl,
+    (
+        Diarrhea = 'y' -> add_symptom(diarrhea);
+        Diarrhea = 'n' -> write('No Diarrhea.\n');
+        write('Invalid input. Please try again.\n'), ask_diarrhea
+    ).
+ask_abdopain :-
+    write('Are you experiencing abdominal pain (y/n)? '), read(AbdominalPain), nl,
+    (
+        AbdominalPain = 'y' -> add_symptom(abdominal_pain);
+        AbdominalPain = 'n' -> write('No Abdominal Pain.\n');
+        write('Invalid input. Please try again.\n'), ask_abdopain
+    ).
+ask_dehydration :-
+    write('Are you feeling dehydrated (y/n)? '), read(Dehyrated), nl,
+    (
+        Dehyrated = 'y' -> add_symptom(dehydrated);
+        Dehyrated = 'n' -> write('No Dehydration.\n');
+        write('Invalid input. Please try again.\n'), ask_dehydration
+    ).
+ask_chesttightness :-
+    write('Are you feeling any tightness or pressure in your chest (y/n)? '), read(ChestTightness), nl,
+    (
+        ChestTightness = 'y' -> add_symptom(chest_tightness);
+        ChestTightness = 'n' -> write('No Tightness in Chest.\n');
+        write('Invalid input. Please try again.\n'), ask_chesttightness
+    ).
+ask_chestpain :-
+    write('Do you feel any discomfort or pain in your chest (y/n)?'), read(ChestPain), nl,
+    (
+        ChestPain = 'y' -> add_symptom(chest_pain);
+        ChestPain = 'n' -> write('No Chest Pain.\n');
+        write('Invalid input. Please try again.\n'), ask_chestpain
+    ).
+ask_wheezing :-
+    write('Are you experiencing any high-pitched whistling sounds when you breathe, especially when exhaling (y/n)? '), read(Wheezing), nl,
+    (
+        Wheezing = 'y' -> add_symptom(wheezing);
+        Wheezing = 'n' -> write('No Wheezing.\n');
+        write('Invalid input. Please try again.\n'), ask_wheezing
+    ).
+ask_chills :-
+    write('Are you experiencing any chills through your body (y/n)? '), read(Chills), nl,
+    (
+        Chills = 'y' -> add_symptom(chills);
+        Chills = 'n' -> write('No Chills.\n');
+        write('Invalid input. Please try again.\n'), ask_chills
+    ).
+ask_discomfort :-
+    write('Are you experiencing discomfort (y/n)? '), read(Discomfort), nl,
+    (
+        Discomfort = 'y' -> add_symptom(discomfort);
+        Discomfort = 'n' -> write('No Discomfort.\n');
+        write('Invalid input. Please try again.\n'), ask_discomfort
+    ).
+ask_painchewing :-
+    write('Is it painful to chew (y/n)? '), read(PainChewing), nl,
+    (
+        PainChewing = 'y' -> add_symptom(pain_while_chewing);
+        PainChewing = 'n' -> write('No Pain while Chewing.\n');
+        write('Invalid input. Please try again.\n'), ask_painchewing
+    ).
+ask_toothholes :-
+    write('Do your teeth have visible holes (y/n)? '), read(TeethHoles), nl,
+    (
+        TeethHoles = 'y' -> add_symptom(tooth_has_holes);
+        TeethHoles = 'n' -> write('No Holes in Teeth\n');
+        write('Invalid input. Please try again.\n'), ask_toothholes
+    ).
+ask_sensitiveteeth :-
+    write('Are your teeth sensitive to the temperature of food (y/n)? '), read(Sensitive), nl,
+    (
+        Sensitive = 'y' -> add_symptom(sensitive_teeth);
+        Sensitive = 'n' -> write('Teeth not sensitive to temperature.\n');
+        write('Invalid input. Please try again.\n'), ask_sensitiveteeth
+    ).
+ask_discoloredteeth :-
+    write('Have you noticed any discoloration on your teeth (y/n)? '), read(Discoloration), nl,
+    (
+        Discoloration = 'y' -> add_symptom(discolored_tooth);
+        Discoloration = 'n' -> write('No Discolored Teeth.\n');
+        write('Invalid input. Please try again.\n'), ask_discoloredteeth
+    ).
 
 % Check if disease applies to symptoms
 diagnose(Disease, SymptomList) :-
