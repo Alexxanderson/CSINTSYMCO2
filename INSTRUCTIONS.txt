@@ -7,4 +7,5 @@ INSTRUCTIONS ON RUNNING CHATBOT
 6. Enter the choice number as '<number>.'.
 7. If you select (6) Other, you will be prompted to enter symptoms separated by space if multiple. Example 'fever cough rash'. Note: Do not include a period at the end.
 8. If you select any other chief complaint, you will be directed to a series of queries for symptoms that may be connected to the chief complaint.
-9. After answering all queries, the chatbot will present the diagnosis which will contain: list of symptoms, list of possible diseases and likelihood percentage, and it will also present the most probable disease along with its likelihood percentage. 
+9. Please do note that answering each query requires you to end each input with a period (.).
+10. After answering all queries, the chatbot will present the diagnosis which will contain: list of symptoms, list of possible diseases and likelihood percentage, and it will also present the most probable disease along with its likelihood percentage. 
