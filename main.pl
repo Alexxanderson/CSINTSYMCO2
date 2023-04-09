@@ -21,7 +21,7 @@ disease(chickenpox, [fever, rash, papules, vesicles, scabs, headache, loss_of_ap
 % diseases involving difficulty in breathing
 disease(asthma, [difficulty_breathing, shortness_of_breath, cough, chest_tightness, chest_pain, wheezing]).
 % diseases with fatigue
-disease(migraine, [fatigue, blurred_vision, headache, throbbing_headache, nausea, vomiting, dizziness, tingling_on_face, numbness_on_face, mood_change]).
+disease(migraine, [fatigue, blurred_vision, headache, throbbing_headache, nausea, vomiting, tingling_on_face, numbness_on_face, mood_change]).
 disease(diabetes, [fatigue, blurred_vision, frequent_urination, excessive_thirst, excessive_hunger, weight_loss, slow_healing]).
 % diseases with abdominal pain
 disease(cholera, [nausea, vomiting, abdominal_pain, dehydration, diarrhea]).
@@ -56,33 +56,16 @@ ask_chiefc :-
             write('Chief Complaint: Fatigue'), nl,
             add_symptom(fatigue),
             ask_headache,
-            write('Are you suffering from blurred vision (y/n)? '), read(Bvision), nl,
-            (
-                Bvision = 'y' -> (add_symptom(blurred_vision), write('Are you experiencing difficulty in speaking (y/n)? '), read(Diffspeak), nl,
-                    (
-                    Diffspeak = 'y' -> (add_symptom(difficulty_speaking), write('Migraine for sure')
-                            
-                        );
-                        Diffspeak = 'n' -> write('No difficulty in speaking.'), nl;
-                        write('Invalid input. Please try again.')
-                    )
-                );
-                Bvision = 'n' -> write('Clear vision.'), nl;
-                write('Invalid input. Please try again.')
-            ),
-            ask_fever,
-            write('Are you experiencing constipation (y/n)? '), read(Constipation), nl,
-            (
-                Constipation = 'y' -> add_symptom(loss_of_appetite);
-                Constipation = 'n' -> write('No Constipation'), nl;
-                write('Invalid input. Please try again.')
-            )
-            
-
-            % write('Are you experiencing  (Y/N)? '), read(Response), nl,
-            % (
-            %     Response = 'Y' -> add_symptom()
-            % )
+            ask_blurryvision,
+            ask_nausea,
+            ask_vomiting,
+            ask_facenumbness,
+            ask_facetingles,
+            ask_weightloss,
+            ask_hunger,
+            ask_thirst,
+            ask_healing,
+            ask_moodchange
         );
         ChiefC = 3 -> 
         (
@@ -231,7 +214,7 @@ ask_runnynose :-
 ask_headache :-
     write('Are you experiencing headaches (y/n)? '), read(Headache), nl,
     (
-        Headache = 'y' -> add_symptom(headache);
+        Headache = 'y' -> (add_symptom(headache), ask_throbbingheadache);
         Headache = 'n' -> write('No Headaches.\n');
         write('Invalid input. Please try again.\n'), ask_headache
     ).
@@ -361,7 +344,77 @@ ask_discoloredteeth :-
         Discoloration = 'n' -> write('No Discolored Teeth.\n');
         write('Invalid input. Please try again.\n'), ask_discoloredteeth
     ).
+ask_blurryvision :-
+    write('Are you suffering from blurred vision (y/n)? '), read(Bvision), nl,
+    (
+        Bvision = 'y' -> add_symptom(blurred_vision);
+        Bvision = 'n' -> write('Clear vision.\n');
+        write('Invalid input. Please try again.'), ask_blurryvision
+    ).
+ask_throbbingheadache :-
+    write('Does the headache feel like throbbing (y/n)? '), read(Throbbing), nl,
+    (
+        Throbbing = 'y' -> add_symptom(throbbing_headache);
+        Throbbing = 'n' -> write('Normal headache.\n');
+        write('Invalid input. Please try again.'), ask_throbbingheadache
+    ).
+ask_facetingles :-
+    write('Does your face feel tingly (y/n)? '), read(Tingles), nl,
+    (
+        Tingles = 'y' -> add_symptom(tingling_on_face);
+        Tingles = 'n' -> write('No tingling.\n');
+        write('Invalid input. Please try again.'), ask_facetingles
+    ).
+ask_facenumbness :-
+    write('Does your face feel numb (y/n)? '), read(Numb), nl,
+    (
+        Numb = 'y' -> add_symptom(numbness_on_face);
+        Numb = 'n' -> write('No numbness on face.\n');
+        write('Invalid input. Please try again.'), ask_facenumbness
+    ).
+ask_moodchange :-
+    write('Do you feel like your mood has significantly changed the past few days (y/n)? '), read(Mood), nl,
+    (
+        Mood = 'y' -> add_symptom(mood_change);
+        Mood = 'n' -> write('No mood change.\n');
+        write('Invalid input. Please try again.'), ask_moodchange
+    ).
 
+ask_urination :-
+    write('Have you been frequently going to the toilet (y/n)? '), read(Urination), nl,
+    (
+        Urination = 'y' -> add_symptom(frequent_urination);
+        Urination = 'n' -> write('Regularly urinates.\n');
+        write('Invalid input. Please try again.'), ask_urination
+    ).
+ask_thirst :-
+    write('Have you been feeling thirsty often (y/n)? '), read(Thirsty), nl,
+    (
+        Thirsty = 'y' -> add_symptom(excessive_thirst);
+        Thirsty = 'n' -> write('No excessive thirst.\n');
+        write('Invalid input. Please try again.'), ask_thirst
+    ).
+ask_hunger :-
+    write('Have you been feeling hungry often (y/n)? '), read(Hungry), nl,
+    (
+        Hungry = 'y' -> add_symptom(excessive_hunger);
+        Hungry = 'n' -> write('No excessive hunger.\n');
+        write('Invalid input. Please try again.'), ask_hunger
+    ).
+ask_weightloss :-
+    write('Have you lost a lot of weight lately (y/n)? '), read(Weight), nl,
+    (
+        Weight = 'y' -> add_symptom(weight_loss);
+        Weight = 'n' -> write('No significant weight loss.\n');
+        write('Invalid input. Please try again.'), ask_weightloss
+    ).
+ask_healing :-
+    write('Is it taking a long time for your wounds to recover (y/n)? '), read(Healing), nl,
+    (
+        Healing = 'y' -> add_symptom(slow_healing);
+        Healing = 'n' -> write('No signs of slow recovery.\n');
+        write('Invalid input. Please try again.'), ask_healing
+    ).
 
 % Check if disease applies to symptoms and calculate matching percentage
 diagnose(Disease, SymptomList, Percentage) :-
@@ -377,7 +430,7 @@ diagnose_all(SymptomList, DiseasePercentages) :-
     (
         DiseasePercentages = [] ->
             % Execute these lines if the list is empty
-            writeln('I am unable to provide a diagnosis. Please refer to a large medical facility.');
+            writeln('Unable to provide a diagnosis. Please refer to a large medical facility.');
         % Execute these lines if the list is not empty
         sort(2, @>=, DiseasePercentages, SortedDiseases),
         member(MostProbable, SortedDiseases),
@@ -392,10 +445,6 @@ subset([], _).
 subset([H|T], List) :-
     member(H, List),
     subset(T, List).
-
-% Define a predicate to process each element in the list
-process_diseases(Disease) :-
-    write(Disease), nl.
 
 % Read line of strings
 read_strings(Strings) :-
