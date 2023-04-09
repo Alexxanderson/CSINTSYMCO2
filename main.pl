@@ -12,21 +12,50 @@ clear_symptom_list :-
     assertz(symptom_list([])).
 
 % diseases mainly with fever
-disease(measles, [fever, rash, high_fever, cough, white_spots_in_mouth]).
-disease(thypoid, [fever, rash, high_fever, headache, abdominal_pain, diarrhea, muscle_aches, fatigue]).
-disease(influenza, [fever, rash, cough, dry_cough, chills, vomiting, muscle_aches, runny_nose]).
-disease(pneumonia, [fever, rash, cough, chills, vomiting, muscle_aches, shortness_of_breath, difficulty_breathing, chest_pain, loss_of_appetite, fatigue, nausea]).
-disease(chickenpox, [fever, rash, papules, vesicles, scabs, headache, loss_of_appetite, fatigue]).
-
+disease(measles, 
+    'A viral infection that causes fever, cough, runny nose, and a rash all over the body.' , 
+    [fever, rash, high_fever, cough, white_spots_in_mouth, runny_nose], 
+    'Treatment involves rest, fluids, and managing symptoms.').
+disease(thypoid, 
+    'A bacterial infection that causes fever, headache, and abdominal pain.', 
+    [fever, rash, high_fever, headache, abdominal_pain, diarrhea, muscle_aches, fatigue],
+    'Treatment involves antibiotics and managing symptoms.').
+disease(influenza, 
+    'A respiratory infection caused by the influenza virus. Symptoms include fever, cough, and body aches.',
+    [fever, rash, cough, dry_cough, chills, vomiting, muscle_aches, runny_nose],
+    'Treatment involves rest, fluids, and antiviral medication.').
+disease(pneumonia, 
+    'An infection of the lungs that can cause coughing, fever, and difficulty breathing. ',
+    [fever, rash, cough, chills, vomiting, muscle_aches, shortness_of_breath, difficulty_breathing, chest_pain, loss_of_appetite, fatigue, nausea],
+    'Treatment involves antibiotics, oxygen therapy, and managing symptoms.').
+disease(chickenpox, 
+    'A viral infection that causes an itchy rash all over the body. It may come with fever.',
+    [fever, rash, papules, vesicles, scabs, headache, loss_of_appetite, fatigue],
+    'Treatment involves rest, fluids, and managing symptoms.').
 % diseases involving difficulty in breathing
-disease(asthma, [difficulty_breathing, shortness_of_breath, cough, chest_tightness, chest_pain, wheezing]).
+disease(asthma, 
+    'A chronic lung condition that causes wheezing, coughing, and shortness of breath.',
+    [difficulty_breathing, shortness_of_breath, cough, chest_tightness, chest_pain, wheezing],
+    'Treatment involves medication to manage symptoms and prevent attacks.').
 % diseases with fatigue
-disease(migraine, [fatigue, blurred_vision, headache, throbbing_headache, nausea, vomiting, tingling_on_face, numbness_on_face, mood_change]).
-disease(diabetes, [fatigue, blurred_vision, frequent_urination, excessive_thirst, excessive_hunger, weight_loss, slow_healing]).
+disease(migraine, 
+    'A type of headache that can cause severe pain, nausea, and sensitivity to light and sound.',
+    [fatigue, blurred_vision, headache, throbbing_headache, nausea, vomiting, tingling_on_face, numbness_on_face, mood_change],
+    'Treatment involves medication to manage symptoms and prevent attacks.').
+disease(diabetes, 
+    'A chronic condition in which the body cannot properly regulate blood sugar levels.',
+    [fatigue, blurred_vision, frequent_urination, excessive_thirst, excessive_hunger, weight_loss, slow_healing],
+    'Treatment involves medication, lifestyle changes, and monitoring blood sugar levels.').
 % diseases with abdominal pain
-disease(cholera, [nausea, vomiting, abdominal_pain, dehydration, diarrhea]).
+disease(cholera, 
+    'A bacterial infection that can cause severe diarrhea and dehydration. ',
+    [nausea, vomiting, abdominal_pain, dehydration, diarrhea],
+    'Treatment involves rehydration therapy and antibiotics.').
 % mouth disease
-disease(tooth_decay, [toothache, discomfort, pain_while_chewing, tooth_has_holes, discolored_tooth, sensitive_teeth]).
+disease(tooth_decay, 
+    'A condition in which bacteria in the mouth cause cavities to form in the teeth.',
+    [toothache, discomfort, pain_while_chewing, tooth_has_holes, discolored_tooth, sensitive_teeth],
+    'Treatment involves filling the cavities and practicing good oral hygiene.').
 
 ask_chiefc :-
     write('Type in the number that applies: '), read(ChiefC), nl,
@@ -111,6 +140,29 @@ ask_chiefc :-
         );
         ChiefC = 6 ->
         (
+            write('Chief Complaint: Rashes'), nl,
+            add_symptom(rash),
+            ask_fever,
+            ask_whitespots,
+            ask_papules,
+            ask_vesicles,
+            ask_scabs,
+            ask_cough,
+            ask_runnynose,
+            ask_headache,
+            ask_shortofbreath,
+            ask_appetite,
+            ask_fatigue,
+            ask_nausea,
+            ask_vomiting,
+            ask_chills,
+            ask_muscleache,
+            ask_diarrhea,
+            ask_abdopain,
+            ask_chestpain
+        );
+        ChiefC = 7 ->
+        (
             write('Chief Complaint: Other'), nl,
             write('Please enter the symptoms you are experiencing separated with a space.'),nl,
             write('We will provide you with a diagnosis according to the symptoms.'), nl,
@@ -126,7 +178,7 @@ chat :-
     write('Welcome to the Medical Chatbot. '), nl,
     write('Please enter your name: '), read(Patient),
     write('Hello, '), write(Patient), write('. What is your chief complaint? '), nl,
-    write('(1) Fever\n(2) Fatigue\n(3) Abdominal Pain\n(4) Toothache\n(5) Difficulty Breathing\n(6) Other'), nl,
+    write('(1) Fever\n(2) Fatigue\n(3) Abdominal Pain\n(4) Toothache\n(5) Difficulty Breathing\n(6) Rashes\n(7) Other'), nl,
     ask_chiefc, nl,
     write('Diagnosis: '), nl,
     symptom_list(PatientSymptoms), format('Symptoms = ~w', [PatientSymptoms]), nl,
@@ -418,7 +470,7 @@ ask_healing :-
 
 % Check if disease applies to symptoms and calculate matching percentage
 diagnose(Disease, SymptomList, Percentage) :-
-    disease(Disease, Symptoms),
+    disease(Disease,_, Symptoms,_),
     subset(SymptomList, Symptoms),
     length(SymptomList, L1),
     length(Symptoms, L2),
@@ -435,8 +487,11 @@ diagnose_all(SymptomList, DiseasePercentages) :-
         sort(2, @>=, DiseasePercentages, SortedDiseases),
         member(MostProbable, SortedDiseases),
         MostProbable = MaxDisease-MaxPercentage,
+        disease(MaxDisease, Description, _, Treatment),
         format('All Possible Diseases = ~w', [SortedDiseases]), nl,
         write('Most Probable Disease: '), write(MaxDisease), nl,
+        write('Description: '), write(Description), nl,
+        write(Treatment), nl,
         write('Matching Percentage: '), format('~2f', MaxPercentage), write('%.'),nl
     ).
 
@@ -453,182 +508,3 @@ read_strings(Strings) :-
     atom_codes(Atom, Codes),
     atomic_list_concat(List, ' ', Atom),
     maplist(atom_string, Strings, List).
-
-
-
-% disease(measles) :- symptom(fever), 
-%                     symptom(cough), 
-%                     symptom(rash), 
-%                     not(symptom(headache)).
-
-% disease(influenza) :- symptom(fever),
-%                 symptom(cough), 
-%                 symptom(stuffy_nose), 
-%                 symptom(chills),
-%                 symptom(muscle_aches).
-%                 % hpi(dry,cough).
-
-% disease(chickenpox) :-  symptom(fever), 
-%                 symptom(headache), 
-%                 symptom(papules), 
-%                 symptom(vesicles), 
-%                 symptom(scabs), 
-%                 symptom(loss_of_appetite), 
-%                 symptom(tiredness).
-
-% disease(migraine) :- symptom(headache),
-%             symptom(nausea),
-%             symptom(vomiting),
-%             symptom(blurred_vision),
-%             symptom(dizziness),
-%             symptom(tingling_on_face),
-%             symptom(numbness_on_face),
-%             symptom(difficulty_speaking),
-%             symptom(fatigue),
-%             symptom(moode_change).
-%             % hpi(headache,throbbing_on_one_side).
-
-% disease(diabetes) :- symptom(frequent_urination),
-%                     symptom(excessive_thrist),
-%                     symptom(excessive_hunger),
-%                     symptom(weight_loss),
-%                     %weight_loss(unexplained),
-%                     symptom(fatigue),
-%                     symptom(blurred_vision),
-%                     symptom(slow_healing).
-
-% disease(thypoid) :- symptom(abdominal_pain),
-%                     symptom(constipation),
-%                     symptom(body_aches).
-%                     % rash(trunk).
-%                     % fever(high).
-
-% disease(tooth_decay) :- symptom(discomfort), 
-%                     symptom(pain_while_chewing), 
-%                     symptom(tooth_has_holes), 
-%                     symptom(discolored_tooth).
-
-% disease(asthma) :-  symptom(shortness_of_breath), 
-%                     symptom(chest_tightness), 
-%                     symptom(chest_pain), 
-%                     symptom(wheezing).
-
-% disease(cholera) :- symptom(dehydration), 
-%                     symptom(abdominal_cramps), 
-%                     symptom(diarrhea).
-
-% disease(pneumonia) :- symptom(sweating),
-%                     symptom(shaking_chills),
-%                     symptom(confusion),
-%                     symptom(appetite_loss),
-%                     symptom(rapid_breathing).
-
-
-% % Symptoms
-% symptom(fever).
-% symptom(cough).
-% symptom(headache).
-% symptom(sore_throat).
-% symptom(nausea).
-% symptom(vomiting).
-% symptom(rash).
-% symptom(toothache).    
-
-% % Symptoms of Tooth Decay
-% symptom(discomfort).
-% symptom(pain_while_chewing).
-% symptom(tooth_has_holes).
-% symptom(discolored_tooth).
-% symptom(sensitive_eating).
-% % hpi(hot, sensitive_eating). 
-% % hpi(cold, sensitive_eating).
-
-% % Symptoms of Influenza
-% symptom(stuffy_nose).
-% symptom(chills).
-% % symptom(fever).
-% % symptom(cough).
-% symptom(muscle_aches).
-% % HPI
-% % hpi(dry, cough).
-
-% % Symptoms of Typhoid Fever
-% % symptom(fever)
-% % symptom(headache)
-% symptom(abdominal_pain).
-% % symptom(diarrhea)
-% symptom(constipation).
-% % symptom(loss_of_appetite)
-% % symptom(vomiting)
-% symptom(body_aches).
-% % symptom(rash)
-% % rash(trunk).
-% % fever(high).
-
-% % Symptoms of Asthma
-% symptom(shortness_of_breath).
-% symptom(chest_tightness).
-% symptom(chest_pain).
-% symptom(wheezing).
-% % symptom(cough).
-% symptom(difficulty_breathing).
-
-% % Symptoms of Cholera
-% symptom(dehydration).
-% % symptom(nausea)
-% % symptom(vomiting)
-% symptom(abdominal_cramps).
-% symptom(diarrhea).
-% % diarrhea(watery).
-% % diarrhea(rice_water).
-
-% % Symptoms of Diabetes
-% symptom(frequent_urination).
-% symptom(excessive_thirst).
-% symptom(excessive_hunger).
-% symptom(weight_loss).
-% % weight_loss(unexplained).
-% symptom(fatigue).
-% symptom(blurred_vision).
-% symptom(slow_healing).
-
-% % Symptoms of Pneumonia
-% % symptom(cough)
-% % symptom(fever)
-% symptom(sweating).
-% symptom(shaking_chills).
-% % symptom(shortness_of_breath)
-% % symptom(chest_pain)
-% symptom(confusion).
-% % symptom(nausea)
-% % symptom(vomiting)
-% % symptom(diarrhea)
-% % symptom(muscle_aches)
-% % symptom(fatigue)
-% % symptom(difficulty_breathing)
-% symptom(loss_of_appetite).
-% symptom(rapid_breathing).
-
-
-% % Symptoms of Chickenpox
-% % symptom(fever). 
-% % symptom(headache).
-% symptom(papules).
-% symptom(vesicles).
-% symptom(scabs).
-% % symptom(loss_of_appetite).
-% symptom(fatigue).
-
-% % symptoms of Migraine
-% % symptom(headache).
-% % symptom(nausea).
-% % symptom(vomiting).
-% % symptom(blurred_vision).
-% symptom(dizziness).
-% symptom(numbness_on_face).
-% symptom(tingling_on_face).
-% symptom(difficulty_speaking).
-% symptom(fatigue).
-% symptom(mood_change).
-% % HPI
-% % hpi(headache,throbbing_on_one_side).
