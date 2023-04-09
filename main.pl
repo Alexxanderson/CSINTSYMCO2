@@ -6,6 +6,11 @@ add_symptom(Symptom) :-
     retract(symptom_list(List)),
     asserta(symptom_list([Symptom|List])).
 
+% Clear the symptom list
+clear_symptom_list :-
+    retractall(symptom_list(_)),
+    assertz(symptom_list([])).
+
 % diseases mainly with fever
 disease(measles, [fever, rash, high_fever, cough, white_spots_in_mouth]).
 disease(thypoid, [fever, rash, high_fever, headache, abdominal_pain, diarrhea, muscle_aches, fatigue]).
@@ -23,19 +28,13 @@ disease(cholera, [nausea, vomiting, abdominal_pain, dehydration, diarrhea]).
 % mouth disease
 disease(tooth_decay, [toothache, discomfort, pain_while_chewing, tooth_has_holes, discolored_tooth, sensitive_teeth]).
 
-
-% Define the main function to start the chatbot
-chat :-
-    write('Welcome to the Medical Chatbot. '), nl,
-    write('Please enter your name: '), read(Patient),
-    write('Hello, '), write(Patient), write('. What is your chief complaint? '), nl,
-    write('(1) Fever\n(2) Fatigue\n(3) Abdominal Pain\n(4) Toothache\n(5) Difficulty Breathing\n(6) Other'), nl,
-    % add_symptom(cough), add_symptom(fever), symptom_list(PatientSymptoms),  write(PatientSymptoms), nl,
+ask_chiefc :-
     write('Type in the number that applies: '), read(ChiefC), nl,
     (
         % Complaint Finished (Up for revision)
         ChiefC = 1 ->
-        (   write('Chief Complaint: Fever'), nl,
+        (   
+            write('Chief Complaint: Fever'), nl,
             add_symptom(fever),
             ask_highfever,
             ask_rashes,
@@ -104,7 +103,7 @@ chat :-
         ChiefC = 4 ->
         (
             write('Chief Complaint: Toothache'), nl,
-            add_symptom(tooth_ache),
+            add_symptom(toothache),
             ask_discomfort,
             ask_painchewing,
             ask_toothholes,
@@ -127,12 +126,30 @@ chat :-
             ask_nausea,
             ask_muscleache,
             ask_appetite
-        )
-    ), nl,
-    % read_strings(Strings), nl, format('Symptoms = ~w', [Strings]), nl,
+        );
+        ChiefC = 6 ->
+        (
+            write('Chief Complaint: Other'), nl,
+            write('Please enter the symptoms you are experiencing separated with a space.'),nl,
+            write('We will provide you with a diagnosis according to the symptoms.'), nl,
+            write('Symptoms: '), nl, read_strings(Strings),
+            forall(member(Symptom, Strings), add_symptom(Symptom))
+
+        );
+        write('Invalid input. Please try again.\n'), ask_chiefc
+    ).
+
+% Define the main function to start the chatbot
+chat :-
+    write('Welcome to the Medical Chatbot. '), nl,
+    write('Please enter your name: '), read(Patient),
+    write('Hello, '), write(Patient), write('. What is your chief complaint? '), nl,
+    write('(1) Fever\n(2) Fatigue\n(3) Abdominal Pain\n(4) Toothache\n(5) Difficulty Breathing\n(6) Other'), nl,
+    ask_chiefc, nl,
+    write('Diagnosis: '), nl,
     symptom_list(PatientSymptoms), format('Symptoms = ~w', [PatientSymptoms]), nl,
-    diagnose_all(PatientSymptoms, Diseases), format('Diseases = ~w', [Diseases]), nl,
-    forall(member(String, Diseases), process_diseases(String)).
+    diagnose_all(PatientSymptoms, DiseasePercentages), clear_symptom_list.
+    
 
 
 % asking symptoms
@@ -346,14 +363,30 @@ ask_discoloredteeth :-
         write('Invalid input. Please try again.\n'), ask_discoloredteeth
     ).
 
-% Check if disease applies to symptoms
-diagnose(Disease, SymptomList) :-
-    disease(Disease, Symptoms),
-    subset(SymptomList, Symptoms).
 
-% Find all diseases matching the symptom list
-diagnose_all(SymptomList, Diseases) :-
-    findall(Disease, diagnose(Disease, SymptomList), Diseases).
+% Check if disease applies to symptoms and calculate matching percentage
+diagnose(Disease, SymptomList, Percentage) :-
+    disease(Disease, Symptoms),
+    subset(SymptomList, Symptoms),
+    length(SymptomList, L1),
+    length(Symptoms, L2),
+    Percentage is (L1 / L2) * 100.
+
+% Find all diseases matching the symptom list and calculate matching percentages
+diagnose_all(SymptomList, DiseasePercentages) :-
+    findall(Disease-Percentage, diagnose(Disease, SymptomList, Percentage), DiseasePercentages),
+    (
+        DiseasePercentages = [] ->
+            % Execute these lines if the list is empty
+            writeln('I am unable to provide a diagnosis. Please refer to a large medical facility.');
+        % Execute these lines if the list is not empty
+        sort(2, @>=, DiseasePercentages, SortedDiseases),
+        member(MostProbable, SortedDiseases),
+        MostProbable = MaxDisease-MaxPercentage,
+        format('All Possible Diseases = ~w', [SortedDiseases]), nl,
+        write('Most Probable Disease: '), write(MaxDisease), nl,
+        write('Matching Percentage: '), format('~2f', MaxPercentage), write('%.'),nl
+    ).
 
 % subset check
 subset([], _). 
@@ -367,9 +400,12 @@ process_diseases(Disease) :-
 
 % Read line of strings
 read_strings(Strings) :-
+    read_line_to_codes(user_input, _), % discard the newline character
     read_line_to_codes(user_input, Codes),
     atom_codes(Atom, Codes),
-    atomic_list_concat(Strings, ' ', Atom).
+    atomic_list_concat(List, ' ', Atom),
+    maplist(atom_string, Strings, List).
+
 
 
 % disease(measles) :- symptom(fever), 
