@@ -31,7 +31,6 @@ disease(tooth_decay, [toothache, discomfort, pain_while_chewing, tooth_has_holes
 ask_chiefc :-
     write('Type in the number that applies: '), read(ChiefC), nl,
     (
-        % Complaint Finished (Up for revision)
         ChiefC = 1 ->
         (   
             write('Chief Complaint: Fever'), nl,
@@ -148,7 +147,7 @@ chat :-
     ask_chiefc, nl,
     write('Diagnosis: '), nl,
     symptom_list(PatientSymptoms), format('Symptoms = ~w', [PatientSymptoms]), nl,
-    diagnose_all(PatientSymptoms, DiseasePercentages), clear_symptom_list.
+    diagnose_all(PatientSymptoms, _), clear_symptom_list.
     
 
 
