@@ -22,7 +22,7 @@ disease(thypoid,
     'Treatment involves antibiotics and managing symptoms.').
 disease(influenza, 
     'A respiratory infection caused by the influenza virus. Symptoms include fever, cough, and body aches.',
-    [fever, rash, cough, dry_cough, chills, vomiting, muscle_aches, runny_nose],
+    [fever, rash, cough, dry_cough, chills, vomiting, muscle_aches, runny_nose, fatigue, sore_throat],
     'Treatment involves rest, fluids, and antiviral medication.').
 disease(pneumonia, 
     'An infection of the lungs that can cause coughing, fever, and difficulty breathing. ',
@@ -78,7 +78,8 @@ ask_chiefc :-
             ask_muscleache,
             ask_diarrhea,
             ask_abdopain,
-            ask_chestpain
+            ask_chestpain,
+            ask_sorethroat
         );
         ChiefC = 2 ->
         (   
@@ -466,6 +467,13 @@ ask_healing :-
         Healing = 'y' -> add_symptom(slow_healing);
         Healing = 'n' -> write('No signs of slow recovery.\n');
         write('Invalid input. Please try again.'), ask_healing
+    ).
+ask_sorethroat :-
+    write('Do you have a sore throat (y/n)? '), read(SoreThroat), nl,
+    (
+        SoreThroat = 'y' -> add_symptom(sore_throat);
+        SoreThroat = 'n' -> write('No sore throat.\n');
+        write('Invalid input. Please try again.'), ask_sorethroat
     ).
 
 % Check if disease applies to symptoms and calculate matching percentage
