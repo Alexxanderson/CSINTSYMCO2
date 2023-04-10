@@ -16,7 +16,7 @@ disease(measles,
     'A viral infection that causes fever, cough, runny nose, and a rash all over the body.' , 
     [fever, rash, high_fever, cough, white_spots_in_mouth, runny_nose], 
     'Treatment involves rest, fluids, and managing symptoms.').
-disease(thypoid, 
+disease(typhoid_fever, 
     'A bacterial infection that causes fever, headache, and abdominal pain.', 
     [fever, rash, high_fever, headache, abdominal_pain, diarrhea, muscle_aches, fatigue],
     'Treatment involves antibiotics and managing symptoms.').
