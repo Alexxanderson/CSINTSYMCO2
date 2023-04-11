@@ -1,4 +1,4 @@
-INSTRUCTIONS ON RUNNING CHATBOT
+INSTRUCTIONS ON RUNNING CHATBOT FROM TERMINAL
 1. Open swi-prolog interpreter.
 2. Run the file by entering '[main].'.
 3. Start the chatbot by entering 'chat.'.
@@ -9,3 +9,7 @@ INSTRUCTIONS ON RUNNING CHATBOT
 8. If you select any other chief complaint, you will be directed to a series of queries for symptoms that may be connected to the chief complaint.
 9. Please do note that answering each query requires you to end each input with a period (.).
 10. After answering all queries, the chatbot will present the diagnosis which will contain: list of symptoms, list of possible diseases and likelihood percentage, and it will also present the most probable disease along with its description, treatment, and likelihood percentage. 
+
+INSTRUCTIONS ON RUNNING CHATBOT WITH EXECUTABLE FILE 
+1. Run the chatbot.exe file.
+2. Continue on from Step 4 of the instructions above.

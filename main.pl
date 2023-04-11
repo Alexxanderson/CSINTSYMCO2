@@ -11,55 +11,62 @@ clear_symptom_list :-
     retractall(symptom_list(_)),
     assertz(symptom_list([])).
 
-% diseases mainly with fever
+% Declare facts for each disease including the disease name, description, symptoms, and treatment
 disease(measles, 
     'A viral infection that causes fever, cough, runny nose, and a rash all over the body.' , 
     [fever, rash, high_fever, cough, white_spots_in_mouth, runny_nose], 
     'Treatment involves rest, fluids, and managing symptoms.').
+
 disease(typhoid_fever, 
     'A bacterial infection that causes fever, headache, and abdominal pain.', 
     [fever, rash, high_fever, headache, abdominal_pain, diarrhea, muscle_aches, fatigue],
     'Treatment involves antibiotics and managing symptoms.').
+
 disease(influenza, 
     'A respiratory infection caused by the influenza virus. Symptoms include fever, cough, and body aches.',
     [fever, rash, cough, dry_cough, chills, vomiting, muscle_aches, runny_nose, fatigue, sore_throat],
     'Treatment involves rest, fluids, and antiviral medication.').
+
 disease(pneumonia, 
     'An infection of the lungs that can cause coughing, fever, and difficulty breathing. ',
     [fever, rash, cough, chills, vomiting, muscle_aches, shortness_of_breath, difficulty_breathing, chest_pain, loss_of_appetite, fatigue, nausea],
     'Treatment involves antibiotics, oxygen therapy, and managing symptoms.').
+
 disease(chickenpox, 
     'A viral infection that causes an itchy rash all over the body. It may come with fever.',
     [fever, rash, papules, vesicles, scabs, headache, loss_of_appetite, fatigue],
     'Treatment involves rest, fluids, and managing symptoms.').
-% diseases involving difficulty in breathing
+
 disease(asthma, 
     'A chronic lung condition that causes wheezing, coughing, and shortness of breath.',
     [difficulty_breathing, shortness_of_breath, cough, chest_tightness, chest_pain, wheezing],
     'Treatment involves medication to manage symptoms and prevent attacks.').
-% diseases with fatigue
+
 disease(migraine, 
     'A type of headache that can cause severe pain, nausea, and sensitivity to light and sound.',
     [fatigue, blurred_vision, headache, throbbing_headache, nausea, vomiting, tingling_on_face, numbness_on_face, mood_change],
     'Treatment involves medication to manage symptoms and prevent attacks.').
+
 disease(diabetes, 
     'A chronic condition in which the body cannot properly regulate blood sugar levels.',
     [fatigue, blurred_vision, frequent_urination, excessive_thirst, excessive_hunger, weight_loss, slow_healing],
     'Treatment involves medication, lifestyle changes, and monitoring blood sugar levels.').
-% diseases with abdominal pain
+
 disease(cholera, 
     'A bacterial infection that can cause severe diarrhea and dehydration. ',
     [nausea, vomiting, abdominal_pain, dehydration, diarrhea],
     'Treatment involves rehydration therapy and antibiotics.').
-% mouth disease
+
 disease(tooth_decay, 
     'A condition in which bacteria in the mouth cause cavities to form in the teeth.',
     [toothache, discomfort, pain_while_chewing, tooth_has_holes, discolored_tooth, sensitive_teeth],
     'Treatment involves filling the cavities and practicing good oral hygiene.').
 
+% Asking for chief complaint of patient
 ask_chiefc :-
     write('Type in the number that applies: '), read(ChiefC), nl,
     (
+        % Case for chief complaint number 1 fever and follow-up queries
         ChiefC = 1 ->
         (   
             write('Chief Complaint: Fever'), nl,
@@ -81,6 +88,7 @@ ask_chiefc :-
             ask_chestpain,
             ask_sorethroat
         );
+        % Case for chief complaint number 2 fatigue and follow-up queries
         ChiefC = 2 ->
         (   
             write('Chief Complaint: Fatigue'), nl,
@@ -97,6 +105,7 @@ ask_chiefc :-
             ask_healing,
             ask_moodchange
         );
+        % Case for chief complaint number 3 abdominal pain and follow-up queries
         ChiefC = 3 -> 
         (
             write('Chief Complaint: Abdominal Pain'), nl,
@@ -112,6 +121,7 @@ ask_chiefc :-
             ask_fatigue
             
         );
+        % Case for chief complaint number 4 toothache and follow-up queries
         ChiefC = 4 ->
         (
             write('Chief Complaint: Toothache'), nl,
@@ -122,6 +132,7 @@ ask_chiefc :-
             ask_discoloredteeth,
             ask_sensitiveteeth
         );
+        % Case for chief complaint number 5 difficulty breathing and follow-up queries
         ChiefC = 5 -> 
         (
             write('Chief Complaint: Difficulty Breathing'), nl,
@@ -139,6 +150,7 @@ ask_chiefc :-
             ask_muscleache,
             ask_appetite
         );
+        % Case for chief complaint number 6 rashes and follow-up queries
         ChiefC = 6 ->
         (
             write('Chief Complaint: Rashes'), nl,
@@ -162,12 +174,15 @@ ask_chiefc :-
             ask_abdopain,
             ask_chestpain
         );
+        % Case for chief complaint number 7 other
         ChiefC = 7 ->
         (
             write('Chief Complaint: Other'), nl,
             write('Please enter the symptoms you are experiencing separated with a space.'),nl,
             write('We will provide you with a diagnosis according to the symptoms.'), nl,
+            % Read line of input as list of strings
             write('Symptoms: '), nl, read_strings(Strings),
+            % Add each symptom from input to the list of symptoms of the patient
             forall(member(Symptom, Strings), add_symptom(Symptom))
 
         );
@@ -175,19 +190,27 @@ ask_chiefc :-
     ).
 
 % Define the main function to start the chatbot
-chat :-
+main :-
     write('Welcome to the Medical Chatbot. '), nl,
-    write('Please enter your name: '), read(Patient),
+    write('Please enter your name: '), read(Patient), % Get patient name
     write('Hello, '), write(Patient), write('. What is your chief complaint? '), nl,
     write('(1) Fever\n(2) Fatigue\n(3) Abdominal Pain\n(4) Toothache\n(5) Difficulty Breathing\n(6) Rashes\n(7) Other'), nl,
+    % Ask for chief complaint
     ask_chiefc, nl,
     write('Diagnosis: '), nl,
+    % Get list of patient symptoms
     symptom_list(PatientSymptoms), format('Symptoms = ~w', [PatientSymptoms]), nl,
-    diagnose_all(PatientSymptoms, _), clear_symptom_list.
-    
+    % Diagnose all possible diseases according to patient symptoms
+    diagnose_all(PatientSymptoms, _), clear_symptom_list, wait_for_enter.
+
+% Predicate for exiting program
+wait_for_enter :-
+    write('Press Enter to leave program.'),
+    get_single_char(_).
 
 
-% asking symptoms
+
+% Predicates for asking each symptom
 ask_fever :-
     write('Do you have a fever (y/n)? '), read(Fever), nl,
     (
@@ -480,6 +503,7 @@ ask_sorethroat :-
 diagnose(Disease, SymptomList, Percentage) :-
     disease(Disease,_, Symptoms,_),
     subset(SymptomList, Symptoms),
+    % Calculate percentage match of patient's symptoms and symptoms of the disease
     length(SymptomList, L1),
     length(Symptoms, L2),
     Percentage is (L1 / L2) * 100.
@@ -503,7 +527,7 @@ diagnose_all(SymptomList, DiseasePercentages) :-
         write('Matching Percentage: '), format('~2f', MaxPercentage), write('%.'),nl
     ).
 
-% subset check
+% Check for subsets
 subset([], _). 
 subset([H|T], List) :-
     member(H, List),
